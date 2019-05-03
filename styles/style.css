@@ -1,0 +1,76 @@
+
+#memoryBody {background-color: #00a8b5}
+
+.navbar, .navbar-expand-lg, .navbar-dark/*, .col-sm*/{ 
+    background-color: #774898;
+}
+
+#img-brain{max-height: 180px;}
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+#table{ background-color: #774898;}
+
+.cliccable{ pointer-events: auto; }
+.unclickable{ pointer-events: none; }
+
+#preGame /*.row*/ {background-color: #f3ae4b} /**/
+
+.row, .col-sm{ margin: 3px;}
+
+.card-front, .card-back{
+    width: 200px;
+    height: 200px;
+}
+
+.flip-card, .flipped, .can-flip {
+    background-color: transparent;
+    
+    width: 200px;
+    height: 200px;
+    
+    border: 1px solid #774898;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+  }
+  
+  /* This container is needed to position the front and back side */
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    
+    text-align: center;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  
+ 
+  .flip-card-click .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  
+  /* Position the front and back side */
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    
+    width: 100%;
+    height: auto;
+    
+    backface-visibility: hidden;
+  }
+  
+  /* Style the front side (fallback if image is missing) */
+  .flip-card-front {
+    background-color: #bbb;
+    color: black;
+  }
+  
+  /* Style the back side */
+  .flip-card-back {
+    transform: rotateY(180deg);
+  }
+
+
