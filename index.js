@@ -3,19 +3,21 @@ import images from './img/*.png';
 console.log(images.barbie);
 
 let myData;
-let moves = 0;
-let turn = 0;
+let score = 1000;
+let record = 0;
 var card01;
 var card02;
 var counterCards = 0;
-var flaggame=false;
-var card02img=0;
-var card01img=0;
+let flippedCards = 0;
+var flaggame = false;
+var card02img = 0;
+var card01img = 0;
+var moves = 0;
 
-//gestione dell'onclick
 $( document ).ready(()=> {
     
-
+    scoreing();
+    recording();
     
     fetch("http://localhost:3000/memoryData")
         .then(result => {
@@ -31,6 +33,7 @@ $( document ).ready(()=> {
                 function() {
                     if (!card01){
                         card01 = $(this);
+                        moves++;
                         $(card01).css("pointer-events","none");
                         counterCards++;
                         $( this ).addClass("flip-card-click");
@@ -45,6 +48,7 @@ $( document ).ready(()=> {
                     }
                     else {
                         card02 = $(this);
+                        moves++;
                         $(card02).css("pointer-events","none");
                         counterCards++;
                         $( this ).addClass("flip-card-click");
@@ -65,13 +69,23 @@ $( document ).ready(()=> {
                             $(card01).css("pointer-events","none");
                             card01=false;
                             card02=false;
+                            flippedCards += 2;
+                            console.log(flippedCards);
+                            console.log(deck2.length); 
                         }
                         else if (card01img != card02img || counterCards>2){                         
                             console.log("card1 e card2 sono girate ma non sono uguali");
-                            $("#table").css("pointer-events","none");//third card fippable fixing PART1 - if users click third card before animation time (0.5s) third card can flip otherwise third card can't
                             
-                            counterCards =0;
+                            //remove points in match for a wrong action
+                            if(moves%2==0){
+                                checkWinner();
+                                checkLoser();
+                                recording();
+                            }
+                            //console.log(score);
+                            counterCards =0; 
         
+                            $("#table").css("pointer-events","none");//third card fippable fixing PART1 - if users click third card before animation time (0.5s) third card can flip otherwise third card can't
                             setTimeout(function(){
                                 $(".can-flip").removeClass("flip-card-click");
                                 $(".can-flip").removeClass(".can-flip");
@@ -86,52 +100,79 @@ $( document ).ready(()=> {
                             
                         }
                     }
-                    //checkForMatch();
                 }
          
             );
-        });
+
+        }
+    );
 
 
     
     
 }); 
-/*
-function checkForMatch() {
-    let isMatch = card1. === secondCard.dataset.name;
-    isMatch ? disableCards() : unflipCards();
-  }
 
-  function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
+
+
+function scoreing(){
+    var scoreText =  `<p class="font-weight-bold scoreP rounded">SCORE <br>${score}</p>`;
+    score-=5;
+    $('.score').html(scoreText);
 }
 
-*/
+function checkLoser(){
+    if (score<=0){
+        var scoreText =  `<p class="font-weight-bold scoreP rounded">SCORE <br>0</p>`;
+        $('.score').html(scoreText);
+        if(alert('You\'re a loser man! \n Go Home!\nif you are brave click \'ok\' and play again')){}
+        else window.location.reload(); 
+    }
+    else
+        scoreing();
+}
 
+function recording(){
+    localStorage.getItem('record', record);
+    var recordText =  `<p class="font-weight-bold recordP rounded">RECORD <br>${record}</p>`;
+    $('.record').html(recordText);
+    
+}
 
+function checkWinner(){
+    if(flippedCards>=deck2.length){
+        if(score>record)
+            record=score;
+        localStorage.setItem('record', record);
+        alert(`You\'re a Winner man! \n Your score is ${score}\nif you are brave click \'ok\' and play again`);
+ 
 
-
+    }
+}
+/*
+function removeEmtyDiv(){
+    if $(col-sm).haschild
+}*/
 
 
 function createTable(myData){
     //console.log(myData);
     let table = $('#table');
-    //controllo che esistano righe e colonne
+    //check if exist rows and columns
     if (myData.rowNum > 0 && myData.colNum > 0){
-        //ciclo per le rows
+        //cycle for create empty rows
         for(var i =0; i<myData.rowNum; i++){
             
-            var row = '<div class = "row rounded  row'+i+'">';
+            var row = '<br><div class = "row rounded  row'+i+'">';
 
             $('.row'+i)
-            // ciclo per le columns
+            // cycle for create columns
             for(var j =0; j<myData.colNum; j++){
-                var col= '<div class = "col-sm rounded d-flex justify-content-center align-items-center col'+j+'"></div>';
+                var col= '<div class = "col-sm rounded d-flex justify-content-center align-items-center col'+j+'"></div><br>';
                 row += col;
 
             }
             row+='<div>';
+            //fill each row with its columns
             table.append(row);
         }
         fillTable(myData);
@@ -179,7 +220,6 @@ function fillTable(myData){
             </div>`;
        
         col.append(htmlCard);
-        //col.addClass('prova');
     }
 }
 
