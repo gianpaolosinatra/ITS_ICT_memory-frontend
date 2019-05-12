@@ -71,17 +71,20 @@ $( document ).ready(()=> {
                             card02=false;
                             flippedCards += 2;
                             console.log(flippedCards);
-                            console.log(deck2.length); 
+                            console.log(deck2.length);
+                            checkWinner();
+                            checkLoser();
+                            recording(); 
                         }
                         else if (card01img != card02img || counterCards>2){                         
                             console.log("card1 e card2 sono girate ma non sono uguali");
-                            
+                           /* 
                             //remove points in match for a wrong action
                             if(moves%2==0){
                                 checkWinner();
                                 checkLoser();
                                 recording();
-                            }
+                            }*/
                             //console.log(score);
                             counterCards =0; 
         
@@ -132,7 +135,7 @@ function checkLoser(){
 }
 
 function recording(){
-    localStorage.getItem('record', record);
+    record = localStorage.getItem('record');
     var recordText =  `<p class="font-weight-bold recordP rounded">RECORD <br>${record}</p>`;
     $('.record').html(recordText);
     
@@ -143,8 +146,8 @@ function checkWinner(){
         if(score>record)
             record=score;
         localStorage.setItem('record', record);
-        alert(`You\'re a Winner man! \n Your score is ${score}\nif you are brave click \'ok\' and play again`);
- 
+        if(alert(`You\'re a Winner man! \n Your score is ${score}\nif you are brave click \'ok\' and play again`)){}
+        else window.location.reload();
 
     }
 }

@@ -5,7 +5,11 @@
     background-color: #774898;
 }
 
-#img-brain{max-height: 180px;}
+#img-brain  {
+  max-height: 180px;
+  max-width: 70%;
+  height: auto;
+}
 
 .img-fluid {
   max-width: 100%;
@@ -17,7 +21,7 @@
 .cliccable{ pointer-events: auto; }
 .unclickable{ pointer-events: none; }
 
-#preGame /*.row*/ {background-color: #f3ae4b} /**/
+#preGame, .font-weight-bold /*.row*/ {background-color: #f3ae4b} /**/
 
 .row, .col-sm{ margin: 3px;}
 

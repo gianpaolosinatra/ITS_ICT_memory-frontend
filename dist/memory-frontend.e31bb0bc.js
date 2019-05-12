@@ -125,10 +125,10 @@ module.exports = "/black.6da0f10f.png";
 module.exports = "/blue.0fc66000.png";
 },{}],"img/brain-trainer.png":[function(require,module,exports) {
 module.exports = "/brain-trainer.9b62082b.png";
-},{}],"img/dark-blue.png":[function(require,module,exports) {
-module.exports = "/dark-blue.e485f206.png";
 },{}],"img/brown.png":[function(require,module,exports) {
 module.exports = "/brown.c6864aba.png";
+},{}],"img/dark-blue.png":[function(require,module,exports) {
+module.exports = "/dark-blue.e485f206.png";
 },{}],"img/dorso.png":[function(require,module,exports) {
 module.exports = "/dorso.e3878d79.png";
 },{}],"img/green.png":[function(require,module,exports) {
@@ -149,18 +149,18 @@ module.exports = "/pink.ae999596.png";
 module.exports = "/purple.762a0240.png";
 },{}],"img/red.png":[function(require,module,exports) {
 module.exports = "/red.ab5ec8be.png";
-},{}],"img/yellow.png":[function(require,module,exports) {
-module.exports = "/yellow.4535a8e9.png";
 },{}],"img/white.png":[function(require,module,exports) {
 module.exports = "/white.709ac437.png";
+},{}],"img/yellow.png":[function(require,module,exports) {
+module.exports = "/yellow.4535a8e9.png";
 },{}],"img/*.png":[function(require,module,exports) {
 module.exports = {
   "barbie": require("./barbie.png"),
   "black": require("./black.png"),
   "blue": require("./blue.png"),
   "brain-trainer": require("./brain-trainer.png"),
-  "dark-blue": require("./dark-blue.png"),
   "brown": require("./brown.png"),
+  "dark-blue": require("./dark-blue.png"),
   "dorso": require("./dorso.png"),
   "green": require("./green.png"),
   "grey": require("./grey.png"),
@@ -171,10 +171,10 @@ module.exports = {
   "pink": require("./pink.png"),
   "purple": require("./purple.png"),
   "red": require("./red.png"),
-  "yellow": require("./yellow.png"),
-  "white": require("./white.png")
+  "white": require("./white.png"),
+  "yellow": require("./yellow.png")
 };
-},{"./barbie.png":"img/barbie.png","./black.png":"img/black.png","./blue.png":"img/blue.png","./brain-trainer.png":"img/brain-trainer.png","./dark-blue.png":"img/dark-blue.png","./brown.png":"img/brown.png","./dorso.png":"img/dorso.png","./green.png":"img/green.png","./grey.png":"img/grey.png","./lime.png":"img/lime.png","./memory.png":"img/memory.png","./oil.png":"img/oil.png","./orange.png":"img/orange.png","./pink.png":"img/pink.png","./purple.png":"img/purple.png","./red.png":"img/red.png","./yellow.png":"img/yellow.png","./white.png":"img/white.png"}],"index.js":[function(require,module,exports) {
+},{"./barbie.png":"img/barbie.png","./black.png":"img/black.png","./blue.png":"img/blue.png","./brain-trainer.png":"img/brain-trainer.png","./brown.png":"img/brown.png","./dark-blue.png":"img/dark-blue.png","./dorso.png":"img/dorso.png","./green.png":"img/green.png","./grey.png":"img/grey.png","./lime.png":"img/lime.png","./memory.png":"img/memory.png","./oil.png":"img/oil.png","./orange.png":"img/orange.png","./pink.png":"img/pink.png","./purple.png":"img/purple.png","./red.png":"img/red.png","./white.png":"img/white.png","./yellow.png":"img/yellow.png"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _ = _interopRequireDefault(require("./img/*.png"));
@@ -183,16 +183,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 console.log(_.default.barbie);
 var myData;
-var moves = 0;
-var turn = 0;
+var score = 1000;
+var record = 0;
 var card01;
 var card02;
 var counterCards = 0;
+var flippedCards = 0;
 var flaggame = false;
 var card02img = 0;
-var card01img = 0; //gestione dell'onclick
-
+var card01img = 0;
+var moves = 0;
 $(document).ready(function () {
+  scoreing();
+  recording();
   fetch("http://localhost:3000/memoryData").then(function (result) {
     return result.json();
   }).then(function (data) {
@@ -203,6 +206,7 @@ $(document).ready(function () {
     $(".flip-card").click(function () {
       if (!card01) {
         card01 = $(this);
+        moves++;
         $(card01).css("pointer-events", "none");
         counterCards++;
         $(this).addClass("flip-card-click");
@@ -214,6 +218,7 @@ $(document).ready(function () {
         return;
       } else {
         card02 = $(this);
+        moves++;
         $(card02).css("pointer-events", "none");
         counterCards++;
         $(this).addClass("flip-card-click");
@@ -234,11 +239,26 @@ $(document).ready(function () {
           $(card01).css("pointer-events", "none");
           card01 = false;
           card02 = false;
+          flippedCards += 2;
+          console.log(flippedCards);
+          console.log(deck2.length);
+          checkWinner();
+          checkLoser();
+          recording();
         } else if (card01img != card02img || counterCards > 2) {
           console.log("card1 e card2 sono girate ma non sono uguali");
-          $("#table").css("pointer-events", "none"); //third card fippable fixing PART1 - if users click third card before animation time (0.5s) third card can flip otherwise third card can't
+          /* 
+           //remove points in match for a wrong action
+           if(moves%2==0){
+               checkWinner();
+               checkLoser();
+               recording();
+           }*/
+          //console.log(score);
 
           counterCards = 0;
+          $("#table").css("pointer-events", "none"); //third card fippable fixing PART1 - if users click third card before animation time (0.5s) third card can flip otherwise third card can't
+
           setTimeout(function () {
             $(".can-flip").removeClass("flip-card-click");
             $(".can-flip").removeClass(".can-flip");
@@ -249,40 +269,63 @@ $(document).ready(function () {
             $("#table").css("pointer-events", "auto"); //third card fippable fixing PART2
           }, 1500);
         }
-      } //checkForMatch();
-
+      }
     });
   });
 });
-/*
-function checkForMatch() {
-    let isMatch = card1. === secondCard.dataset.name;
-    isMatch ? disableCards() : unflipCards();
-  }
 
-  function disableCards() {
-    firstCard.removeEventListener('click', flipCard);
-    secondCard.removeEventListener('click', flipCard);
+function scoreing() {
+  var scoreText = "<p class=\"font-weight-bold scoreP rounded\">SCORE <br>".concat(score, "</p>");
+  score -= 5;
+  $('.score').html(scoreText);
 }
 
-*/
+function checkLoser() {
+  if (score <= 0) {
+    var scoreText = "<p class=\"font-weight-bold scoreP rounded\">SCORE <br>0</p>";
+    $('.score').html(scoreText);
+
+    if (alert('You\'re a loser man! \n Go Home!\nif you are brave click \'ok\' and play again')) {} else window.location.reload();
+  } else scoreing();
+}
+
+function recording() {
+  record = localStorage.getItem('record');
+  var recordText = "<p class=\"font-weight-bold recordP rounded\">RECORD <br>".concat(record, "</p>");
+  $('.record').html(recordText);
+}
+
+function checkWinner() {
+  if (flippedCards >= deck2.length) {
+    if (score > record) record = score;
+    localStorage.setItem('record', record);
+
+    if (alert("You're a Winner man! \n Your score is ".concat(score, "\nif you are brave click 'ok' and play again"))) {} else window.location.reload();
+  }
+}
+/*
+function removeEmtyDiv(){
+    if $(col-sm).haschild
+}*/
+
 
 function createTable(myData) {
   //console.log(myData);
-  var table = $('#table'); //controllo che esistano righe e colonne
+  var table = $('#table'); //check if exist rows and columns
 
   if (myData.rowNum > 0 && myData.colNum > 0) {
-    //ciclo per le rows
+    //cycle for create empty rows
     for (var i = 0; i < myData.rowNum; i++) {
-      var row = '<div class = "row rounded  row' + i + '">';
-      $('.row' + i); // ciclo per le columns
+      var row = '<br><div class = "row rounded  row' + i + '">';
+      $('.row' + i); // cycle for create columns
 
       for (var j = 0; j < myData.colNum; j++) {
-        var col = '<div class = "col-sm rounded d-flex justify-content-center align-items-center col' + j + '"></div>';
+        var col = '<div class = "col-sm rounded d-flex justify-content-center align-items-center col' + j + '"></div><br>';
         row += col;
       }
 
-      row += '<div>';
+      row += '<div>'; //fill each row with its columns
+
       table.append(row);
     }
 
@@ -317,10 +360,10 @@ function fillTable(myData) {
     var cardI = myData.deck[randomCardIndex - 1].imgCode;
     var nameOfCard = _.default[cardI];
     var htmlCard = "<div class=\"flip-card d-flex justify-content-center rounded\">\n                <div class=\"flip-card-inner rounded d-flex justify-content-center\">\n                    <div class=\"flip-card-front rounded \">\n                        <img class=\"rounded mx-auto d-block\" src=\"./dorso.e3878d79.png\">\n                    </div>\n                    <div class=\"flip-card-back rounded\">\n                        <img data-cardvalue=\"" + nameOfCard + "\" class=\"rounded mx-auto d-block \" src= ." + nameOfCard + ">\n                    </div>\n                </div>\n            </div>";
-    col.append(htmlCard); //col.addClass('prova');
+    col.append(htmlCard);
   }
 }
-},{"./img/*.png":"img/*.png"}],"../../../../../Program Files/nodejs/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./img/*.png":"img/*.png"}],"../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -348,7 +391,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57854" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63262" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -523,5 +566,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["../../../../../Program Files/nodejs/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
+},{}]},{},["../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.js"], null)
 //# sourceMappingURL=/memory-frontend.e31bb0bc.js.map
