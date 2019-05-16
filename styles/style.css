@@ -5,16 +5,16 @@
     background-color: #774898;
 }
 
-#img-brain  {
+#img-brain, #img-banana {
   max-height: 180px;
   max-width: 70%;
   height: auto;
 }
 
-.img-fluid {
-  max-width: 100%;
-  height: auto;
+#img-banana{
+  max-height: 150px;
 }
+
 
 #table{ background-color: #774898;}
 
